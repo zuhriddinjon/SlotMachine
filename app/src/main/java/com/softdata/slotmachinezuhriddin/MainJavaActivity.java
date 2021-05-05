@@ -1,11 +1,14 @@
 package com.softdata.slotmachinezuhriddin;
 
 import android.os.Bundle;
-import android.view.View;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.recyclerview.widget.LinearSnapHelper;
+import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -18,6 +21,7 @@ public class MainJavaActivity extends AppCompatActivity {
     private RecyclerView rv1, rv2, rv3;
     private Random random1, random2, random3;
     private RecyclerViewDisabler disabler;
+    SnapHelper snapHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -27,14 +31,31 @@ public class MainJavaActivity extends AppCompatActivity {
         btn = findViewById(R.id.btn_start);
         disabler = new RecyclerViewDisabler(true);
 
-        setInitialData();
+        snapHelper= new PagerSnapHelper();
+        random1 = new Random();
 
+        setInitialData();
+        initRV();
+        btn.setOnClickListener(v -> clickStart());
+    }
+
+    private void setInitialData() {
+//        list.add(new ImageRvModel(R.drawable.apple));
+//        list.add(new ImageRvModel(R.drawable.car));
+        list.add(new ImageRvModel(R.drawable.flower));
+        list.add(new ImageRvModel(R.drawable.bath));
+        list.add(new ImageRvModel(R.drawable.piano));
+    }
+
+    private void initRV() {
         adapter = new RVAdapter(list);
 
         rv1 = findViewById(R.id.rv_1);
         rv1.setAdapter(adapter);
         disabler.setEnable(false);
         rv1.addOnItemTouchListener(disabler);
+        snapHelper.attachToRecyclerView(rv1);
+
 
         rv2 = findViewById(R.id.rv_2);
         rv2.addOnItemTouchListener(disabler);
@@ -43,27 +64,22 @@ public class MainJavaActivity extends AppCompatActivity {
         rv3 = findViewById(R.id.rv_3);
         rv3.addOnItemTouchListener(disabler);
         rv3.setAdapter(adapter);
-
-        btn.setOnClickListener(v -> clickStart());
-    }
-
-    private void setInitialData() {
-        list.add(new ImageRvModel(R.drawable.apple));
-        list.add(new ImageRvModel(R.drawable.car));
-        list.add(new ImageRvModel(R.drawable.flower));
-        list.add(new ImageRvModel(R.drawable.piano));
+        snapHelper.attachToRecyclerView(rv3);
     }
 
     private void clickStart() {
-        random1 = new Random(200);
-        random2 = new Random(200);
-        random3 = new Random(200);
 
-        disabler.setEnable(true);
+        Log.d("TAG", "clickStart:" + random1);
 
-        rv1.smoothScrollToPosition(random1.nextInt());
-        rv2.scrollToPosition(random2.nextInt());
-        rv3.scrollToPosition(random3.nextInt());
 
+        rv3.smoothScrollToPosition(random1.nextInt(200));
+        rv1.smoothScrollToPosition(random1.nextInt(200));
+        rv2.smoothScrollToPosition(random1.nextInt(200));
+        snapHelper.attachToRecyclerView(rv1);
+        snapHelper.attachToRecyclerView(rv2);
+        snapHelper.attachToRecyclerView(rv3);
+//        rv3.requestFocus();
+
+        disabler.setEnable(false);
     }
 }
